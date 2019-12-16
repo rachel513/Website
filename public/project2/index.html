@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Rachel Dean" />
+    <meta name="description" content="Hi everyone! Welcome to my SDS 348 Computational Biology Final Project. Feel free to look around.">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Project 2</title>
+    <meta name="generator" content="Hugo 0.61.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/about/">ABOUT ME</a></li>
+        
+        <li><a href="/blog/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+        <li><a href="/myresume.pdf">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/project2/">Project 2</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          November 27, 2019
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages -------------------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## &lt;U+2713&gt; ggplot2 3.2.1     &lt;U+2713&gt; purrr   0.3.3
+## &lt;U+2713&gt; tibble  2.1.3     &lt;U+2713&gt; dplyr   0.8.3
+## &lt;U+2713&gt; tidyr   1.0.0     &lt;U+2713&gt; stringr 1.4.0
+## &lt;U+2713&gt; readr   1.3.1     &lt;U+2713&gt; forcats 0.4.0</code></pre>
+<pre><code>## -- Conflicts ----------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>Dataset1 &lt;- read.csv(&quot;C:/Users/rachel/Desktop/website/static/Part C Dataset.csv&quot;)
+Dataset2 &lt;- read.csv(&quot;C:/Users/rachel/Desktop/website/static/Countries.csv&quot;)
+ 
+Dataset1 &lt;- Dataset1 %&gt;% na.omit() 
+Dataset2 &lt;- Dataset2 %&gt;% na.omit() 
+
+Dataset1$Randomized.Rank &lt;- NULL 
+
+FullDataset &lt;- inner_join(Dataset1, Dataset2, by = c(&quot;Countries&quot; = &quot;Country&quot;)) </code></pre>
+<pre><code>## Warning: Column `Countries`/`Country` joining factors with different levels,
+## coercing to character vector</code></pre>
+<pre class="r"><code>FullDataset &lt;- FullDataset %&gt;% na.omit() 
+FullDataset &lt;- FullDataset %&gt;% distinct() 
+ 
+head(FullDataset)</code></pre>
+<pre><code>##     Countries GINI.Coefficient Infant.mortality GDP.per.capita Literacy
+## 1     Ecuador             45.9             15.9          11500    0.945
+## 2      Brazil             49.0             16.9          15600    0.922
+## 3    Cameroon             44.6             49.8           3700    0.750
+## 4 El Salvador             36.0             16.3           8000    0.904
+## 5   Guatemala             53.0             23.3           8200    0.815
+## 6        Peru             45.3             17.8          13500    0.945
+##   Population NetMigration
+## 1   16140000          0.0
+## 2  207800000         -0.1
+## 3   23340000         -0.1
+## 4    6127000         -8.1
+## 5   16340000         -1.9
+## 6   31380000         -2.4</code></pre>
+<p>The dataset I will be working with for this project is the merged dataset from Project 1. The first variable is country name (‘Countries’), which was the variable used to merged the 2 datasets in Project 1. A numerical variable is GINI coefficient (‘GINI.Coefficient’), which measures the country’s equality. On the 2 ends of the spectrum, a GINI coefficient of 0 expresses perfect equality and a GINI coefficient of 1 expresses perfect inequality. The next numerical variable is infant mortality (“Infant.mortality”) (a great indicator of development), which is the number of infant deaths out of 1,000 births. The next numerical variable is GDP per capita (‘GDP.per.capita’), which is a country’s gross domestic product divided by total population. The next numerical variable is literacy (‘Literacy’), which is the percentage of a country’s population that can read and write. The next numerical variable is population (‘Population’), which is the country’s total population. The last variable (also numerical) is net migration (‘NetMigration’), which is the net number of people that emigrate out of or immigrate into a country out of 1,000 people. If there’s net immigration, the net migration value is positive. If there’s net emigration, the net migration value is negative.</p>
+</div>
+<div id="manova-testing" class="section level3">
+<h3>MANOVA testing</h3>
+<pre class="r"><code>FullDataset %&gt;% summarize(median(GDP.per.capita))</code></pre>
+<pre><code>##   median(GDP.per.capita)
+## 1                  15200</code></pre>
+<pre class="r"><code>FullDataset &lt;- FullDataset %&gt;% mutate(Wealth = case_when(GDP.per.capita &gt; 15200 ~ &quot;wealthy&quot;, GDP.per.capita &lt;= 15200 ~ &quot;poor&quot;))</code></pre>
+<p>I made a new categorical variable, Wealth, because the categorical variable ‘Countries’ can’t be used (each observation is unique because each country only has one set of data; it’s more of an identifying variable). I used the median of GDP per capita to set the threshold between poor and wealthy. If a country’s GDP per capita is greater than 15200, the country is wealthy. If a country’s GDP per capita is less than or equal to 15200, the country is poor.</p>
+<pre class="r"><code>manova &lt;- manova(cbind(GINI.Coefficient, Infant.mortality, Literacy, NetMigration) ~ Wealth, data = FullDataset)
+summary(manova)</code></pre>
+<pre><code>##           Df  Pillai approx F num Df den Df    Pr(&gt;F)    
+## Wealth     1 0.55577   13.762      4     44 2.338e-07 ***
+## Residuals 47                                             
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>From the MANOVA test, we can see that overall, the numerical response variables (GINI Coefficient, infant mortality, literacy, and net migration) show a mean difference across levels of the Wealth variable (p-value &lt; 0.05). I didn’t include GDP per capita in the response variables because the categorical variable of Wealth was created from GDP per capita, so it would be redundant to include GDP per capita. I also did not include the population variable because the wealth of a country has no apparent relationship with its size - there are small wealthy nations, as well as small poor nations, and there are large wealthy nations, as well as large poor nations.</p>
+<pre class="r"><code>summary.aov(manova)</code></pre>
+<pre><code>##  Response GINI.Coefficient :
+##             Df Sum Sq Mean Sq F value  Pr(&gt;F)  
+## Wealth       1  394.7  394.75  5.5264 0.02298 *
+## Residuals   47 3357.2   71.43                  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response Infant.mortality :
+##             Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Wealth       1   7274  7274.0  39.892 8.933e-08 ***
+## Residuals   47   8570   182.3                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response Literacy :
+##             Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Wealth       1 0.9091 0.90910  34.038 4.793e-07 ***
+## Residuals   47 1.2553 0.02671                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response NetMigration :
+##             Df Sum Sq Mean Sq F value  Pr(&gt;F)  
+## Wealth       1  62.19  62.192  4.5383 0.03841 *
+## Residuals   47 644.08  13.704                  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>pairwise.t.test(FullDataset$GINI.Coefficient, FullDataset$Wealth, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  FullDataset$GINI.Coefficient and FullDataset$Wealth 
+## 
+##         poor 
+## wealthy 0.023
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(FullDataset$Infant.mortality, FullDataset$Wealth, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  FullDataset$Infant.mortality and FullDataset$Wealth 
+## 
+##         poor   
+## wealthy 8.9e-08
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(FullDataset$Literacy, FullDataset$Wealth, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  FullDataset$Literacy and FullDataset$Wealth 
+## 
+##         poor   
+## wealthy 4.8e-07
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(FullDataset$NetMigration, FullDataset$Wealth, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  FullDataset$NetMigration and FullDataset$Wealth 
+## 
+##         poor 
+## wealthy 0.038
+## 
+## P value adjustment method: none</code></pre>
+<p>From the univariate ANOVA tests, all response variables show a mean difference across groups. From the post-hoc t tests, for GINI coefficient, poor and wealthy do not differ. For infant mortality, poor and wealthy differ. For literacy, poor and wealthy differ. For net migration, poor and wealthy do not differ.</p>
+<p>In total, I performed 9 tests: 1 MANOVA, 4 ANOVAs, and 4 t-tests. If left unadjusted, the probability of at least 1 type I error is 1 - (1 - 0.05)^9 = 0.3698. Adjusting the significance level brings the probability of at least 1 type I error back down to 0.05. The new significance level, when adjusted with bonferroni correction, is 0.05/9 = 0.0056.</p>
+<p>For assumptions, random sample and independent observation were very likely met. For each country, the statistics were collected independent of the other countries. It was a random sample because I randomly selected these countries out of all the countries in the world.</p>
+<p>For ANOVA, additional assumptions are normal distribution and equal variance of each group. For MANOVA, additional assumptions are multivariate normality, equal variance for each dependent variable within each group and equal co-variance between dependent variables, linear relationships among dependent variables, no multicollinearity, and no extreme univariate or multivariate outliers.</p>
+<p>For MANOVA, it’s not likely that the assumptions will not be met because there are a lot of assumptions and the assumptions aren’t entirely realistic for real data. Also, the dataset isn’t very large, so extreme data points will affect these assumptions more than if the dataset were larger. For ANOVA, it’s more likely that equal variance will be met, but it’s not likely that normal distribution will be met for many of the dependent variables because their values are very skewed in this dataset.</p>
+</div>
+<div id="randomization-test" class="section level3">
+<h3>Randomization Test</h3>
+<pre class="r"><code>FullDataset %&gt;% group_by(Wealth) %&gt;% summarize(means = mean(Infant.mortality)) %&gt;% summarize(diff(means))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `diff(means)`
+##           &lt;dbl&gt;
+## 1         -24.4</code></pre>
+<pre class="r"><code>rand_dist &lt;- vector()
+
+for(i in 1:5000){
+new &lt;- data.frame(Infant.mortality = sample(FullDataset$Infant.mortality), Wealth = FullDataset$Wealth)
+rand_dist[i] &lt;- mean(new[new$Wealth == &quot;wealthy&quot;,]$Infant.mortality) - mean(new[new$Wealth == &quot;poor&quot;,]$Infant.mortality)}
+
+mean(rand_dist &lt; -24.373)*2</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>{hist(rand_dist); abline(v = -24.373, col = &quot;red&quot;)}</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>The null hypothesis is that the mean infant mortality rate is the same for poor and wealthy countries. The alternative hypothesis is that the mean infant mortality rate is not the same for poor and wealthy countries. The p-value is 0, which means that we reject the null hypothesis and that the mean infant mortality rate is definitely not the same for poor and wealthy countries.</p>
+<p>I created a histogram that visualizes the null distribution of the randomization test. When overlaying the test statistic (the true mean difference of -24.373), it doesn’t show up on the graph because it’s out of the range of the null distribution (p-value = 0). Therefore, the test statistic is unusual and meaningful in terms of the null distribution.</p>
+</div>
+<div id="linear-regression-model" class="section level3">
+<h3>Linear Regression Model</h3>
+<pre class="r"><code>NewDataset &lt;- FullDataset %&gt;% mutate(Literacy_c = Literacy - mean(Literacy, na.rm = T))
+
+lrm &lt;- lm(Infant.mortality ~ Wealth * Literacy_c, data= NewDataset)
+summary(lrm)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Infant.mortality ~ Wealth * Literacy_c, data = NewDataset)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -44.553  -6.187  -1.311   6.315  27.064 
+## 
+## Coefficients:
+##                          Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                29.612      2.773  10.677 6.42e-14 ***
+## Wealthwealthy              -4.522      8.039  -0.563  0.57654    
+## Literacy_c                -36.983     10.804  -3.423  0.00133 ** 
+## Wealthwealthy:Literacy_c  -70.304     52.537  -1.338  0.18756    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 11.85 on 45 degrees of freedom
+## Multiple R-squared:  0.6015, Adjusted R-squared:  0.5749 
+## F-statistic: 22.64 on 3 and 45 DF,  p-value: 4.387e-09</code></pre>
+<p>For the linear regression model, the model predicts infant mortaliy from mean-centered literacy and wealth, and from their interaction. For mean-centered literacy (when controlling for wealth), for every increase in literacy (increase by 1%), infant mortality per 1,000 live births decreases by 36.983. With poor as the reference point, when a country is wealthy, infant mortality decreases by 4.522 per 1,000 live births. For interaction, when a country is wealthy and literacy rate increases by 1%, infant mortality decreases by 70.304 per 1,000 live births.</p>
+<pre class="r"><code>plot &lt;- ggplot(data = NewDataset, aes(x = Literacy, y = Infant.mortality, group = Wealth)) + 
+  geom_point(aes(color = Wealth)) + 
+  geom_smooth(method = &quot;lm&quot;, se = F, fullrange = T, aes(color = Wealth))
+plot + ggtitle(&quot;Infant Mortality Predicted by Nation&#39;s Wealth and Literacy Rate&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>I’ve also plotted the regression model - literacy rate is on the x-axis, infant mortality is on the y-axis, and the dots are grouped by the country’s wealth status (wealthy or poor).</p>
+<pre class="r"><code>residuals &lt;- lrm$residuals
+shapiro.test(residuals)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  residuals
+## W = 0.91926, p-value = 0.002491</code></pre>
+<pre class="r"><code>library(sandwich)
+library(lmtest)</code></pre>
+<pre><code>## Loading required package: zoo</code></pre>
+<pre><code>## 
+## Attaching package: &#39;zoo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric</code></pre>
+<pre class="r"><code>bptest(lrm)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  lrm
+## BP = 17.997, df = 3, p-value = 0.0004405</code></pre>
+<pre class="r"><code>plot1 &lt;- ggplot(data = NewDataset, aes(x = Literacy, y = Infant.mortality)) + 
+  geom_point(col = &quot;black&quot;) + 
+  geom_smooth(method = &quot;lm&quot;, se = F, fullrange = T)
+plot1 + ggtitle(&quot;Literacy Rate vs. Infant Mortality Rate&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>plot2 &lt;- ggplot(data = NewDataset, aes(x = Wealth, y = Infant.mortality)) + 
+  geom_point(col = &quot;black&quot;) + 
+  geom_smooth(method = &quot;lm&quot;, se = F, fullrange = T)
+plot2 + ggtitle(&quot;Wealth vs. Infant Mortality Rate&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<p>To check assumption of normality of residuals, I used the Shapiro-Wilk normality test, which had a p-value of 0.002491. Because the p-value is less than 0.05, we reject the null hypothesis of normality. Therefore, the regression model doesn’t meet the assumption of normality. To check assumption of homoskedasticity, I used the Breusch-Pagan test, which had a p-value of 0.0004405. Because the p-value is less than 0.05, we reject the null hypothesis of homoskedasticity. Therefore, the regression model doesn’t meet the assumption of homoskedasticity and is instead hetereoskedastic. To check linearity between each response and predictor variable, I made graphs. In the graph of literacy rate vs. infant mortality, we can see that the variables are indeed linearly related. In the graph of wealth vs. infant mortality, we can see that the variables are also linearly related.</p>
+<pre class="r"><code>coeftest(lrm, vcov = vcovHC(lrm))</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##                          Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)               29.6123     3.4011  8.7067 3.304e-11 ***
+## Wealthwealthy             -4.5223     9.6907 -0.4667    0.6430    
+## Literacy_c               -36.9834    38.1059 -0.9705    0.3370    
+## Wealthwealthy:Literacy_c -70.3044    69.7906 -1.0074    0.3191    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>When recomputing the regression model with robust standard errors, the standard errors of the predictor variables and the interaction increased drastically (as a result of the robust standard errors), t-values decreased, and all the p-values increased. The p-values changed significantly so that whereas before the robust SEs, literacy rate was a significant predictor of infant mortality; after the robust SEs, literacy rate was no longer a significant predictor of infant mortality. Therefore, there aren’t any variables in this model that are significant predictors of infant mortality.</p>
+<pre class="r"><code>summary(lrm)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Infant.mortality ~ Wealth * Literacy_c, data = NewDataset)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -44.553  -6.187  -1.311   6.315  27.064 
+## 
+## Coefficients:
+##                          Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                29.612      2.773  10.677 6.42e-14 ***
+## Wealthwealthy              -4.522      8.039  -0.563  0.57654    
+## Literacy_c                -36.983     10.804  -3.423  0.00133 ** 
+## Wealthwealthy:Literacy_c  -70.304     52.537  -1.338  0.18756    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 11.85 on 45 degrees of freedom
+## Multiple R-squared:  0.6015, Adjusted R-squared:  0.5749 
+## F-statistic: 22.64 on 3 and 45 DF,  p-value: 4.387e-09</code></pre>
+<p>57.49% of the variation in infant mortality can be explained by the overall model. For that proportion, I used the adjusted R-squared value, which gives a more conservative measurement.</p>
+</div>
+<div id="bootstrapped-standard-errors" class="section level3">
+<h3>Bootstrapped Standard Errors</h3>
+<pre class="r"><code>samp_distn &lt;- replicate(5000, {
+ boot_NewDataset &lt;- NewDataset[sample(nrow(NewDataset), replace=TRUE),]
+ lrm &lt;- lm(Infant.mortality ~ Wealth * Literacy_c, data= boot_NewDataset)
+ coef(lrm)
+})
+
+samp_distn %&gt;% t %&gt;% as.data.frame %&gt;% summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept) Wealthwealthy Literacy_c Wealthwealthy:Literacy_c
+## 1    3.075605      8.062309    26.2216                  55.7566</code></pre>
+<p>I reran the regression model, but with bootstrapped standard errors. For the intercept, the original SE is 2.773, the robust SE is 3.4011, and the bootstrapped SE is about 3 (changes slightly every time the code is run). Therefore, the original SE is the lowest, with bootstrapped in second, and robust in third (highest). For wealth, with poor as the reference point, the original SE is 8.039, the robust SE is 9.6907, and the boostrapped SE is about 7.9 (changes slightly every time the code is run). Therefore, the bootstrapped SE is the lowest, with original in second, and robust in third (highest). For literacy rate, the original SE is 10.804, the robust SE is 38.1059, and the boostrapped SE is about 26. Therefore, the original SE is the lowest, with bootstrapped in second, and robust in third (highest). For the interaction, the original SE is 52.537, the robust SE is 69.7906, and the boostrapped SE is about 55 (changes slightly every time the code is run). Therefore, the original SE was the lowest, with bootstrapped in second, and robust in third (highest). In comparing the different SEs for each variable, a pattern emerges: the robust SEs are always the highest (and usually by a lot), while the original and boostrapped SEs are often very similar.</p>
+<p>When comparing p-values between the original SEs and robust SEs, the p-values for the model with robust SEs are higher than the original model. For the bootstrapped SEs, because their values are so much larger than the original SEs and robust SEs, their t-value will be smaller, which causes their p-value to increase. Therefore, bootstrapped SEs will have higher p-values than the p-values of the original model and the model with robust SEs.</p>
+</div>
+<div id="logistic-regression" class="section level3">
+<h3>Logistic Regression</h3>
+<pre class="r"><code>NewDataset &lt;- NewDataset %&gt;% mutate(binary_wealth = case_when(Wealth == &quot;wealthy&quot; ~ 1, Wealth == &quot;poor&quot; ~ 0))
+
+fit &lt;- lm(binary_wealth ~ GINI.Coefficient + NetMigration, data = NewDataset, family = binomial(link = &quot;logit&quot;))</code></pre>
+<pre><code>## Warning: In lm.fit(x, y, offset = offset, singular.ok = singular.ok, ...) :
+##  extra argument &#39;family&#39; will be disregarded</code></pre>
+<pre class="r"><code>summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = binary_wealth ~ GINI.Coefficient + NetMigration, 
+##     data = NewDataset, family = binomial(link = &quot;logit&quot;))
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.6127 -0.3931 -0.1289  0.4275  0.9375 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       1.204251   0.310146   3.883 0.000328 ***
+## GINI.Coefficient -0.017596   0.007628  -2.307 0.025627 *  
+## NetMigration      0.036693   0.017582   2.087 0.042463 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.4665 on 46 degrees of freedom
+## Multiple R-squared:  0.1826, Adjusted R-squared:  0.1471 
+## F-statistic: 5.138 on 2 and 46 DF,  p-value: 0.009681</code></pre>
+<pre class="r"><code>exp(coef(fit))</code></pre>
+<pre><code>##      (Intercept) GINI.Coefficient     NetMigration 
+##        3.3342613        0.9825574        1.0373748</code></pre>
+<p>For the logistic regression, I chose wealth, a binary variable, to be predicted from GINI coefficient and net migration. Every increase in GINI coefficient by 1 (more unequality) multiples the odds of being a wealthy nation by e^-0.0176 = 0.9826. Therefore, when GINI coefficient increases, the odds of being a wealthy nation decreases slightly. Every increase in net migration by 1 (net migration into the country) multiples the odds of being a wealthy nation by e^0.0367 = 1.0374. Therefore, when net migration increases, the odds of being a wealthy nation increases slightly.</p>
+<pre class="r"><code>NewDataset_edited &lt;- NewDataset %&gt;% mutate(prob = predict(fit, type = &quot;response&quot;), prediction_0.5 = ifelse(prob &gt; 0.5, 1, 0))
+
+table(truth = NewDataset_edited$binary_wealth, prediction = NewDataset_edited$prediction_0.5) %&gt;% addmargins</code></pre>
+<pre><code>##      prediction
+## truth  0  1 Sum
+##   0   16  9  25
+##   1   11 13  24
+##   Sum 27 22  49</code></pre>
+<pre class="r"><code>(16 + 13)/49</code></pre>
+<pre><code>## [1] 0.5918367</code></pre>
+<pre class="r"><code>13/24</code></pre>
+<pre><code>## [1] 0.5416667</code></pre>
+<pre class="r"><code>16/25</code></pre>
+<pre><code>## [1] 0.64</code></pre>
+<pre class="r"><code>13/22</code></pre>
+<pre><code>## [1] 0.5909091</code></pre>
+<p>In a confusion matrix, I plotted the predictions from the logistic regression (which gives calculated odds) against the true values from the binary of ‘Wealth’ variable. Accuracy, the proportion of correctly predicted cases, is (16+13)/49 = 0.5918. Sensitivity, the proportion of wealthy nations that were correctly predicted, is 13/24 = 0.5417. Specificity, the proportion of poor nations that were correctly predicted, is 16/25 = 0.64. Precision/Recall, the proportion of wealthy nations as classified by the logistic regression that are really wealthy nations, is 13/22 = 0.5909. The accuracy, sensitivity, specificity, and precision of the logistic regression aren’t great, but they aren’t terrible - they are average (all around 0.5).</p>
+<pre class="r"><code>NewDataset_edited$logit &lt;- predict(fit)
+NewDataset_edited$Wealth &lt;- factor(NewDataset_edited$Wealth, levels = c(&quot;wealthy&quot;, &quot;poor&quot;))
+plot &lt;- ggplot(data = NewDataset_edited, aes(logit, fill = Wealth)) +
+  geom_density()
+plot + ggtitle(&quot;Density Plot&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>Using ggplot, I plotted density of log-odds calculated from the logistic regression by the binary wealth variable.</p>
+<pre class="r"><code>class_diag&lt;-function(probs,truth){
+  
+  tab&lt;-table(factor(probs&gt;.5,levels=c(&quot;FALSE&quot;,&quot;TRUE&quot;)),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+
+  if(is.numeric(truth)==FALSE &amp; is.logical(truth)==FALSE) truth&lt;-as.numeric(truth)-1
+  
+  #CALCULATE EXACT AUC
+  ord&lt;-order(probs, decreasing=TRUE)
+  probs &lt;- probs[ord]; truth &lt;- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup&lt;-c(probs[-1]&gt;=probs[-length(probs)], FALSE)
+  TPR&lt;-c(0,TPR[!dup],1); FPR&lt;-c(0,FPR[!dup],1)
+  
+  n &lt;- length(TPR)
+  auc&lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,auc)
+}
+
+prob &lt;- predict(fit, type = &quot;response&quot;)
+
+library(plotROC)
+ROCplot &lt;- ggplot(NewDataset) + 
+  geom_roc(aes(d = binary_wealth,m = prob), n.cuts = 0)
+ROCplot + ggtitle(&quot;ROC Curve&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<pre class="r"><code>class_diag(prob, NewDataset$binary_wealth)</code></pre>
+<pre><code>##         acc      sens spec       ppv  auc
+## 1 0.5918367 0.5416667 0.64 0.5909091 0.72</code></pre>
+<p>The ROC curve generated shows the trade-off between sensitivity and specificity of this logistics regression model. The AUC (area under the curve) is 0.72, which is “fair”. This means that the logistic regression is doing an “all-right” job at predicting wealth from net migration and GINI coefficient.</p>
+<pre class="r"><code>set.seed(1234)
+k = 5 
+
+data1 &lt;- NewDataset[sample(nrow(NewDataset)),] 
+folds &lt;- cut(seq(1:nrow(NewDataset)), breaks = k, labels = F)
+
+diags &lt;- NULL
+for(i in 1:k){
+ train &lt;- data1[folds != i,]
+ test &lt;- data1[folds == i,]
+ truth &lt;- test$binary_wealth
+
+ fit &lt;- glm(binary_wealth ~ GINI.Coefficient + NetMigration, data = train, family = &quot;binomial&quot;)
+ probs &lt;- predict(fit, newdata = test, type = &quot;response&quot;)
+ 
+ diags &lt;- rbind(diags, class_diag(probs, truth))
+}
+
+apply(diags, 2, mean)</code></pre>
+<pre><code>##       acc      sens      spec       ppv       auc 
+## 0.5866667 0.5366667 0.6657143 0.6266667 0.7303810</code></pre>
+<p>From the 5-fold CV (5-fold instead of 10-fold because there’s only 49 observations), the average (of 5) out-of-sample accuracy is 0.5889, sensitivity is 0.4583, and precision/recall is 0.475. All of these values are lower than those of the original logistics model.</p>
+</div>
+<div id="lasso-regression" class="section level3">
+<h3>LASSO Regression</h3>
+<pre class="r"><code>Selected_Dataset &lt;- NewDataset %&gt;% select(GINI.Coefficient, Infant.mortality, GDP.per.capita, Literacy, Population, NetMigration, binary_wealth)
+
+library(glmnet)</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Matrix&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:tidyr&#39;:
+## 
+##     expand, pack, unpack</code></pre>
+<pre><code>## Loaded glmnet 3.0-2</code></pre>
+<pre class="r"><code>y &lt;- as.matrix(Selected_Dataset$binary_wealth)
+fit &lt;- glm(binary_wealth ~ ., data = Selected_Dataset, family = &quot;binomial&quot;)</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+<pre class="r"><code>x &lt;- model.matrix(fit)
+x &lt;- x[, -1]
+
+cv &lt;- cv.glmnet(x, y, family = &quot;binomial&quot;)
+
+lasso1 &lt;- glmnet(x, y, lambda = cv$lambda.1se, family = &quot;binomial&quot;)
+coef(lasso1)</code></pre>
+<pre><code>## 7 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                             s0
+## (Intercept)      -6.791054e+00
+## GINI.Coefficient  .           
+## Infant.mortality  .           
+## GDP.per.capita    2.787008e-04
+## Literacy          2.851275e+00
+## Population        9.054936e-10
+## NetMigration      .</code></pre>
+<p>For the lasso regression, I chose the binary wealth variable to predict and ran the regression against the rest of the variables as predictors. For the simplest model whose accuracy is near the best possible, GINI coefficient, infant mortality, GDP per capita, literacy, and population are predictor variables with nonzero LASSO coefficient estimates and are retained. The only predictor variable that isn’t be retained is net migration.</p>
+<pre class="r"><code>Selected_Dataset &lt;- NewDataset %&gt;% select(GINI.Coefficient, Infant.mortality, GDP.per.capita, Literacy, Population, binary_wealth)
+
+set.seed(1234)
+k = 5 
+
+data1 &lt;- Selected_Dataset[sample(nrow(Selected_Dataset)),] 
+folds &lt;- cut(seq(1:nrow(Selected_Dataset)), breaks=k, labels=F)
+
+diags&lt;-NULL
+for(i in 1:k){
+ train &lt;- data1[folds != i,]
+ test &lt;- data1[folds == i,]
+ truth &lt;- test$binary_wealth
+
+ fit &lt;- glm(binary_wealth ~ .,data = train, family = &quot;binomial&quot;)
+ probs &lt;- predict(fit, newdata = test, type = &quot;response&quot;)
+ 
+ diags &lt;- rbind(diags, class_diag(probs, truth))
+}</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+<pre class="r"><code>apply(diags, 2, mean)</code></pre>
+<pre><code>##  acc sens spec  ppv  auc 
+## 0.98 0.96 1.00 1.00 1.00</code></pre>
+<p>In performing 5-fold cross validation on only the predictor variables with nonzero LASSO coefficient estimates, the accuracy of the model is 0.9178, which is much higher than the accuracy of the logistic regresion (0.5918) and the accuracy of the 5-fold CV of that logistic regression (0.5889). The 5-fold cross validation on the selected predictor variables also has much higher sensitivity, specificity, precision, and AUC. Therefore, the lassoed model is much better at predicting wealth than the logistic regression with only 2 variables (net migration and GINI coefficient) and the 5-fold CV of the logistic regression with only 2 variables.</p>
+</div>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

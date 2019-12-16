@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blogs on Rachel Dean</title>
+    <link>/blog/</link>
+    <description>Recent content in Blogs on Rachel Dean</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Thu, 12 Dec 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Working with Python</title>
+      <link>/blog/working-with-python/</link>
+      <pubDate>Thu, 12 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/working-with-python/</guid>
+      <description>In the month that we as a class were working on Python, I found that the topic that I enjoyed the most is isolating specific phrases using regex (regular expression). Figuring it out how to isolate certain sections is like a puzzle, which is what I like most about Genetics and Genomics work (my focus in academics). It’s kind of like figuring out a pedigree - what’s an individual’s likely genotype given their phenotype and their relatives’ phenotypes, what’s the mode of inheritance, etc.</description>
+    </item>
+    
+  </channel>
+</rss>

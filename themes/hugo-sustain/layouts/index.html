@@ -1,0 +1,19 @@
+{{ partial "head" . }}
+  <body>
+    <div id="wrap">
+      {{ partial "header" . }}
+      <section id="about">
+        <div class="container">
+        <div class="avatar">
+          <img class="img-circle" src="{{ .Site.BaseURL }}img/{{ .Site.Params.avatar }}" alt="Responsive image">
+        </div>
+        <h3>Hi everyone! I'm <strong>{{ .Site.Params.author }}</strong>, an Undergraduate at UT Austin.</h3>
+        <h3>Welcome to my SDS 348 Computational Biology Final Project. Feel free to look around.</h3>
+        <h3>Email: rachel_dean@utexas.edu</h3>
+        <h3>github username: rachel513</h3>
+        </div>
+      </section>
+    </div>
+    {{ partial "footer" . }}
+  </body>
+</html>

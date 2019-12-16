@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Rachel Dean" />
+    <meta name="description" content="Hi everyone! Welcome to my SDS 348 Computational Biology Final Project. Feel free to look around.">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Working with Python</title>
+    <meta name="generator" content="Hugo 0.61.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/about/">ABOUT ME</a></li>
+        
+        <li><a href="/blog/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+        <li><a href="/myresume.pdf">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/blog/working-with-python/">Working with Python</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          December 12, 2019
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<p>In the month that we as a class were working on Python, I found that the topic that I enjoyed the most is isolating specific phrases using regex (regular expression). Figuring it out how to isolate certain sections is like a puzzle, which is what I like most about Genetics and Genomics work (my focus in academics). It’s kind of like figuring out a pedigree - what’s an individual’s likely genotype given their phenotype and their relatives’ phenotypes, what’s the mode of inheritance, etc.</p>
+<p><img src="/blog/2019-12-12-working-with-python_files/pedigree.jpg" /></p>
+<pre class="r"><code>library(reticulate)
+use_python(&quot;usr/bin/python3&quot;)</code></pre>
+<pre class="python"><code>import re 
+
+string1 = &quot;We have to extract these numbers 12, 47, 48 The integers numbers are also interesting: 189 2036 314\&#39;,\&#39; is a separator, so please extract these n umbers 125,789,1450 and also these 564,90456 We like to offer you 7890$ per mo nth in order to complete this task... we are joking&quot; 
+
+print(re.findall(r&quot;\d+&quot;, string1))</code></pre>
+<pre><code>## [&#39;12&#39;, &#39;47&#39;, &#39;48&#39;, &#39;189&#39;, &#39;2036&#39;, &#39;314&#39;, &#39;125&#39;, &#39;789&#39;, &#39;1450&#39;, &#39;564&#39;, &#39;90456&#39;, &#39;7890&#39;]</code></pre>
+<p>In this example, we are separating out all the numbers. From looking at this string, we can see that there are a variety of characters that separate the numbers - there’s commas, spaces, dollar signs, backwards spaces. So, we can’t isolate the numbers by stopping before one specific character. Instead, we can use an exclusion tactic - only include numbers and nothing else. So, a backslash followed by “d” will give you only digits and by adding the “+” at the end, that means that it will give you back all the digits of the number, as long as they are consecutive and uninterrupted.</p>
+<pre class="python"><code>import re
+
+string2 = &quot;Jan 13 00:48:59: DROP service 68-&gt;67(udp) from 213.92.153.167 to 69.4 3.107.219, prefix: \&quot;spoof iana-0/8\&quot; \ (in: eth0 69.43.112.233(38:f8:b7:90:45:92):68 -&gt; 217.70.100.113(00:21:87:79:9c:d9):67 UDP len:576 ttl:64) \ Jan 13 12:02:48: ACCEPT service dns from 74.125.186.208 to firewall(pub-nic-dn s), prefix: \&quot;none\&quot; \ (in: eth0 74.125.186.208(00:1a:e3:52:5d:8e):36008 -&gt; 140.105.63.158(00:1a:9a:86:2e:62):53 UDP len:82 ttl:38) \ Jan 13 17:44:52: DROP service 68-&gt;67(udp) from 172.45.240.237 to 217.70.177.6 0, prefix: \&quot;spoof iana-0/8\&quot; \ (in: eth0 216.34.90.16(00:21:91:fe:a2:6f):68 -&gt; 69.43.85.253(00:07:e1:7c:53:db):67 UDP len:328 ttl:64) \ Jan 13 17:52:08: ACCEPT service http from 213.121.184.130 to firewall(pub-ni c), prefix: \&quot;none\&quot; \ (in: eth0 213.121.184.130(00:05:2e:6a:a4:14):8504 -&gt; 140.105.63.164(00:60:11:92:ed:1b):80 TCP flags: ****S* len:52 ttl:109)&quot; 
+
+print(re.findall(r&quot;\w{2}\:\w{2}\:\w{2}\:\w{2}\:\w{2}\:\w{2}&quot;, string2))</code></pre>
+<pre><code>## [&#39;38:f8:b7:90:45:92&#39;, &#39;00:21:87:79:9c:d9&#39;, &#39;00:1a:e3:52:5d:8e&#39;, &#39;00:1a:9a:86:2e:62&#39;, &#39;00:21:91:fe:a2:6f&#39;, &#39;00:07:e1:7c:53:db&#39;, &#39;00:05:2e:6a:a4:14&#39;, &#39;00:60:11:92:ed:1b&#39;]</code></pre>
+<p>For this string, in order to separate out and return all the MAC addresses, we have to target alphanumericals because the characters that fell in between the the colons are both digits and letters. On top of that, there’s no specific pattern as to which positions are digits and which are letters, so we have to use an inclusive capturing method. A backslash followed by a “w” represents alphanumerics, the “{2}” means that we are looking for 2 consecutive alphnumerics, and backslash followed by a “:” means that we are separating the 6 sets of 2 consecutive alphanumerics with colons.</p>
+<pre class="python"><code>import re
+
+string3 = r&quot;We try to quantitatively capture these characteristics by defining a set of indexes,\ which can be computed using the mosaic image and the corresponding ground trut h: \ \begin{itemize} \   \item $\mu_{A_T}$ and $\sigma_{A_T}$, the mean and standard deviation of t he tiles area $A_T$, respectively; \   \item $\rho_\text{filler}$, the ratio between the filler area and the over all mosaic are, computed as \ $\rho_\text{filler}=\frac{\sum_{T \in \mathcal{T} A_T}}{A}$, being $A$ the are a of the mosaic; \   \item \todo{does it worth?}; \   \item \todo{does it worth?}; \   \item $\mu_{C_T}$, the mean of the tiles \emph{color dispersion} $C_T$, \ being $C_T = \sigma_R+\sigma_G+\sigma_B$, where $\sigma_R$, $\sigma_G$ and $\s igma_B$ are the \ standard deviation of the red, green and blue channel values of the pixels wit hin the tile $T$.\ After applying a method to an image, we compare the segmented image (i.e., the result) \ against the ground truth and assess the performance according to the following three metrics: \ \begin{itemize} \   \item average tile precision $P$ \   \item average tile recall $R$ \   \item tile count error $C$&quot; 
+
+print(re.findall(r&quot;\$.*?\$&quot;, string3))</code></pre>
+<pre><code>## [&#39;$\\mu_{A_T}$&#39;, &#39;$\\sigma_{A_T}$&#39;, &#39;$A_T$&#39;, &#39;$\\rho_\\text{filler}$&#39;, &#39;$\\rho_\\text{filler}=\\frac{\\sum_{T \\in \\mathcal{T} A_T}}{A}$&#39;, &#39;$A$&#39;, &#39;$\\mu_{C_T}$&#39;, &#39;$C_T$&#39;, &#39;$C_T = \\sigma_R+\\sigma_G+\\sigma_B$&#39;, &#39;$\\sigma_R$&#39;, &#39;$\\sigma_G$&#39;, &#39;$\\s igma_B$&#39;, &#39;$T$&#39;, &#39;$P$&#39;, &#39;$R$&#39;, &#39;$C$&#39;]</code></pre>
+<p>In this example, we are isolating consecutive $s and everything in between those $s. This one was more difficult for me. When I was first coding this, I was stuck on a code that kept on returning strings of characters bordered by $s, but I would include several $s in between the starting and ending $s. However, by adding a ? after the *, I was able to isolate each instance of characters separated by $ without including $s in between.</p>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

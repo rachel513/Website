@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>about me on Rachel Dean</title>
+    <link>/categories/about-me/</link>
+    <description>Recent content in about me on Rachel Dean</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    
+	<atom:link href="/categories/about-me/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About Me</title>
+      <link>/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/about/</guid>
+      <description>INTRODUCTION Hi! My name is Rachel Dean and I&#39;m currently a junior at the University of Texas at Austin. I was born in Orange County, CA and moved to Austin, TX when I was really young. I have a brother, Joseph, who also goes to UT Austin. He followed in our father&#39;s footsteps and is an Electrical Engineering (EE) major and plans to get his Ph.D in the topic. My family&#39;s from Taiwan and a couple of summers ago, after a mountain of paperwok, I became a dual citizen of USA and Taiwan.</description>
+    </item>
+    
+  </channel>
+</rss>

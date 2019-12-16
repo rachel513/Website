@@ -1,0 +1,47 @@
+baseurl = "/"
+languageCode = "en-US"
+title = "Rachel Dean"
+# Enable comments by entering your Disqus shortname
+disqusShortname = ""
+# Enable Google Analytics by entering your tracking code
+googleAnalytics = ""
+theme = "hugo-sustain"
+
+[permalinks]
+  post = "/:year/:month/:day/:slug"
+
+[params]
+  avatar = "profile.JPG"
+  author = "Rachel Dean"
+  description = "Hi everyone! Welcome to my SDS 348 Computational Biology Final Project. Feel free to look around."
+
+  # Custom assets can be linked with their paths relative to static/
+  custom_css = []
+  custom_js  = []
+
+[params.social]
+  Github        = "rachel513"
+  Email         = "rachel_dean@utexas.edu"
+
+
+## Main Menu
+[[menu.main]]
+  name = "about me"
+  identifier = "about me"
+  weight = 100
+  url = "/about/"
+[[menu.main]]
+  name = "blog"
+  weight = 200
+  identifier = "blog"
+  url = "/blog/"
+[[menu.main]]
+  name = "projects"
+  identifier = "projects"
+  weight = 300
+  url = "/projects/"
+[[menu.main]]
+  name = "resume"
+  identifier = "resume"
+  weight = 400
+  url = "/MyResume.pdf"

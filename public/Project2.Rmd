@@ -1,0 +1,316 @@
+---
+title: "Project 2"
+author: "Rachel Dean"
+date: 2019-11-27
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### Introduction
+
+```{R}
+library(tidyverse)
+
+Dataset1 <- read.csv("C:/Users/rachel/Desktop/website/static/Part C Dataset.csv")
+Dataset2 <- read.csv("C:/Users/rachel/Desktop/website/static/Countries.csv")
+ 
+Dataset1 <- Dataset1 %>% na.omit() 
+Dataset2 <- Dataset2 %>% na.omit() 
+
+Dataset1$Randomized.Rank <- NULL 
+
+FullDataset <- inner_join(Dataset1, Dataset2, by = c("Countries" = "Country")) 
+FullDataset <- FullDataset %>% na.omit() 
+FullDataset <- FullDataset %>% distinct() 
+ 
+head(FullDataset)
+```
+
+The dataset I will be working with for this project is the merged dataset from Project 1. The first variable is country name ('Countries'), which was the variable used to merged the 2 datasets in Project 1. A numerical variable is GINI coefficient ('GINI.Coefficient'), which measures the country's equality. On the 2 ends of the spectrum, a GINI coefficient of 0 expresses perfect equality and a GINI coefficient of 1 expresses perfect inequality. The next numerical variable is infant mortality ("Infant.mortality") (a great indicator of development), which is the number of infant deaths out of 1,000 births. The next numerical variable is GDP per capita ('GDP.per.capita'), which is a country's gross domestic product divided by total population. The next numerical variable is literacy ('Literacy'), which is the percentage of a country's population that can read and write. The next numerical variable is population ('Population'), which is the country's total population. The last variable (also numerical) is net migration ('NetMigration'), which is the net number of people that emigrate out of or immigrate into a country out of 1,000 people. If there's net immigration, the net migration value is positive. If there's net emigration, the net migration value is negative. 
+
+### MANOVA testing
+
+```{R}
+FullDataset %>% summarize(median(GDP.per.capita))
+
+FullDataset <- FullDataset %>% mutate(Wealth = case_when(GDP.per.capita > 15200 ~ "wealthy", GDP.per.capita <= 15200 ~ "poor"))
+```
+
+I made a new categorical variable, Wealth, because the categorical variable 'Countries' can't be used (each observation is unique because each country only has one set of data; it's more of an identifying variable). I used the median of GDP per capita to set the threshold between poor and wealthy. If a country's GDP per capita is greater than 15200, the country is wealthy. If a country's GDP per capita is less than or equal to 15200, the country is poor.
+
+```{R}
+manova <- manova(cbind(GINI.Coefficient, Infant.mortality, Literacy, NetMigration) ~ Wealth, data = FullDataset)
+summary(manova)
+```
+
+From the MANOVA test, we can see that overall, the numerical response variables (GINI Coefficient, infant mortality, literacy, and net migration) show a mean difference across levels of the Wealth variable (p-value < 0.05). I didn't include GDP per capita in the response variables because the categorical variable of Wealth was created from GDP per capita, so it would be redundant to include GDP per capita. I also did not include the population variable because  the wealth of a country has no apparent relationship with its size - there are small wealthy nations, as well as small poor nations, and there are large wealthy nations, as well as large poor nations.
+
+```{R}
+summary.aov(manova)
+
+pairwise.t.test(FullDataset$GINI.Coefficient, FullDataset$Wealth, p.adj = "none")
+pairwise.t.test(FullDataset$Infant.mortality, FullDataset$Wealth, p.adj = "none")
+pairwise.t.test(FullDataset$Literacy, FullDataset$Wealth, p.adj = "none")
+pairwise.t.test(FullDataset$NetMigration, FullDataset$Wealth, p.adj = "none")
+```
+
+From the univariate ANOVA tests, all response variables show a mean difference across groups. From the post-hoc t tests, for GINI coefficient, poor and wealthy do not differ. For infant mortality, poor and wealthy differ. For literacy, poor and wealthy differ. For net migration, poor and wealthy do not differ. 
+
+In total, I performed 9 tests: 1 MANOVA, 4 ANOVAs, and 4 t-tests. If left unadjusted, the probability of at least 1 type I error is 1 - (1 - 0.05)^9 = 0.3698. Adjusting the significance level brings the probability of at least 1 type I error back down to 0.05. The new significance level, when adjusted with bonferroni correction, is 0.05/9 = 0.0056. 
+
+For assumptions, random sample and independent observation were very likely met. For each country, the statistics were collected independent of the other countries. It was a random sample because I randomly selected these countries out of all the countries in the world. 
+
+For ANOVA, additional assumptions are normal distribution and equal variance of each group. For MANOVA, additional assumptions are multivariate normality, equal variance for each dependent variable within each group and equal co-variance between dependent variables, linear relationships among dependent variables, no multicollinearity, and no extreme univariate or multivariate outliers. 
+
+For MANOVA, it's not likely that the assumptions will not be met because there are a lot of assumptions and the assumptions aren't entirely realistic for real data. Also, the dataset isn't very large, so extreme data points will affect these assumptions more than if the dataset were larger. For ANOVA, it's more likely that equal variance will be met, but it's not likely that normal distribution will be met for many of the dependent variables because their values are very skewed in this dataset. 
+
+
+### Randomization Test
+```{R}
+FullDataset %>% group_by(Wealth) %>% summarize(means = mean(Infant.mortality)) %>% summarize(diff(means))
+
+rand_dist <- vector()
+
+for(i in 1:5000){
+new <- data.frame(Infant.mortality = sample(FullDataset$Infant.mortality), Wealth = FullDataset$Wealth)
+rand_dist[i] <- mean(new[new$Wealth == "wealthy",]$Infant.mortality) - mean(new[new$Wealth == "poor",]$Infant.mortality)}
+
+mean(rand_dist < -24.373)*2
+
+{hist(rand_dist); abline(v = -24.373, col = "red")}
+
+```
+
+The null hypothesis is that the mean infant mortality rate is the same for poor and wealthy countries. The alternative hypothesis is that the mean infant mortality rate is not the same for poor and wealthy countries. The p-value is 0, which means that we reject the null hypothesis and that the mean infant mortality rate is definitely not the same for poor and wealthy countries. 
+
+I created a histogram that visualizes the null distribution of the randomization test. When overlaying the test statistic (the true mean difference of -24.373), it doesn't show up on the graph because it's out of the range of the null distribution (p-value = 0). Therefore, the test statistic is unusual and meaningful in terms of the null distribution.
+
+### Linear Regression Model
+```{R}
+NewDataset <- FullDataset %>% mutate(Literacy_c = Literacy - mean(Literacy, na.rm = T))
+
+lrm <- lm(Infant.mortality ~ Wealth * Literacy_c, data= NewDataset)
+summary(lrm)
+```
+
+For the linear regression model, the model predicts infant mortaliy from mean-centered literacy and wealth, and from their interaction. For mean-centered literacy (when controlling for wealth), for every increase in literacy (increase by 1%), infant mortality per 1,000 live births decreases by 36.983. With poor as the reference point, when a country is wealthy, infant mortality decreases by 4.522 per 1,000 live births. For interaction, when a country is wealthy and literacy rate increases by 1%, infant mortality decreases by 70.304 per 1,000 live births. 
+
+```{R}
+plot <- ggplot(data = NewDataset, aes(x = Literacy, y = Infant.mortality, group = Wealth)) + 
+  geom_point(aes(color = Wealth)) + 
+  geom_smooth(method = "lm", se = F, fullrange = T, aes(color = Wealth))
+plot + ggtitle("Infant Mortality Predicted by Nation's Wealth and Literacy Rate")
+```
+
+I've also plotted the regression model - literacy rate is on the x-axis, infant mortality is on the y-axis, and the dots are grouped by the country's wealth status (wealthy or poor). 
+
+```{R}
+residuals <- lrm$residuals
+shapiro.test(residuals)
+
+library(sandwich)
+library(lmtest)
+bptest(lrm)
+
+plot1 <- ggplot(data = NewDataset, aes(x = Literacy, y = Infant.mortality)) + 
+  geom_point(col = "black") + 
+  geom_smooth(method = "lm", se = F, fullrange = T)
+plot1 + ggtitle("Literacy Rate vs. Infant Mortality Rate")
+
+plot2 <- ggplot(data = NewDataset, aes(x = Wealth, y = Infant.mortality)) + 
+  geom_point(col = "black") + 
+  geom_smooth(method = "lm", se = F, fullrange = T)
+plot2 + ggtitle("Wealth vs. Infant Mortality Rate")
+```
+
+To check assumption of normality of residuals, I used the Shapiro-Wilk normality test, which had a p-value of 0.002491. Because the p-value is less than 0.05, we reject the null hypothesis of normality. Therefore, the regression model doesn't meet the assumption of normality. To check assumption of homoskedasticity, I used the Breusch-Pagan test, which had a p-value of 0.0004405. Because the p-value is less than 0.05, we reject the null hypothesis of homoskedasticity. Therefore, the regression model doesn't meet the assumption of homoskedasticity and is instead hetereoskedastic. To check linearity between each response and predictor variable, I made graphs. In the graph of literacy rate vs. infant mortality, we can see that the variables are indeed linearly related. In the graph of wealth vs. infant mortality, we can see that the variables are also linearly related.
+
+```{R}
+coeftest(lrm, vcov = vcovHC(lrm))
+```
+
+When recomputing the regression model with robust standard errors, the standard errors of the predictor variables and the interaction increased drastically (as a result of the robust standard errors), t-values decreased, and all the p-values increased. The p-values changed significantly so that whereas before the robust SEs, literacy rate was a significant predictor of infant mortality; after the robust SEs, literacy rate was no longer a significant predictor of infant mortality. Therefore, there aren't any variables in this model that are significant predictors of infant mortality.
+
+```{R}
+summary(lrm)
+```
+
+57.49% of the variation in infant mortality can be explained by the overall model. For that proportion, I used the adjusted R-squared value, which gives a more conservative measurement.
+
+
+### Bootstrapped Standard Errors
+```{R}
+samp_distn <- replicate(5000, {
+ boot_NewDataset <- NewDataset[sample(nrow(NewDataset), replace=TRUE),]
+ lrm <- lm(Infant.mortality ~ Wealth * Literacy_c, data= boot_NewDataset)
+ coef(lrm)
+})
+
+samp_distn %>% t %>% as.data.frame %>% summarize_all(sd)
+
+```
+
+I reran the regression model, but with bootstrapped standard errors. For the intercept, the original SE is 2.773, the robust SE is 3.4011, and the bootstrapped SE is about 3 (changes slightly every time the code is run). Therefore, the original SE is the lowest, with bootstrapped in second, and robust in third (highest). For wealth, with poor as the reference point, the original SE is 8.039, the robust SE is 9.6907, and the boostrapped SE is about 7.9 (changes slightly every time the code is run). Therefore, the bootstrapped SE is the lowest, with original in second, and robust in third (highest). For literacy rate, the original SE is 10.804, the robust SE is 38.1059, and the boostrapped SE is about 26. Therefore, the original SE is the lowest, with bootstrapped in second, and robust in third (highest). For the interaction, the original SE is 52.537, the robust SE is 69.7906, and the boostrapped SE is about 55 (changes slightly every time the code is run). Therefore, the original SE was the lowest, with bootstrapped in second, and robust in third (highest). In comparing the different SEs for each variable, a pattern emerges: the robust SEs are always the highest (and usually by a lot), while the original and boostrapped SEs are often very similar.
+
+When comparing p-values between the original SEs and robust SEs, the p-values for the model with robust SEs are higher than the original model. For the bootstrapped SEs, because their values are so much larger than the original SEs and robust SEs, their t-value will be smaller, which causes their p-value to increase. Therefore, bootstrapped SEs will have higher p-values than the p-values of the original model and the model with robust SEs.
+
+### Logistic Regression
+```{R}
+NewDataset <- NewDataset %>% mutate(binary_wealth = case_when(Wealth == "wealthy" ~ 1, Wealth == "poor" ~ 0))
+
+fit <- lm(binary_wealth ~ GINI.Coefficient + NetMigration, data = NewDataset, family = binomial(link = "logit"))
+summary(fit)
+exp(coef(fit))
+```
+
+For the logistic regression, I chose wealth, a binary variable, to be predicted from GINI coefficient and net migration. Every increase in GINI coefficient by 1 (more unequality) multiples the odds of being a wealthy nation by e^-0.0176 = 0.9826. Therefore, when GINI coefficient increases, the odds of being a wealthy nation decreases slightly. Every increase in net migration by 1 (net migration into the country) multiples the odds of being a wealthy nation by e^0.0367 = 1.0374. Therefore, when net migration increases, the odds of being a wealthy nation increases slightly. 
+
+```{R}
+NewDataset_edited <- NewDataset %>% mutate(prob = predict(fit, type = "response"), prediction_0.5 = ifelse(prob > 0.5, 1, 0))
+
+table(truth = NewDataset_edited$binary_wealth, prediction = NewDataset_edited$prediction_0.5) %>% addmargins
+
+(16 + 13)/49
+13/24
+16/25
+13/22
+```
+
+In a confusion matrix, I plotted the predictions from the logistic regression (which gives calculated odds) against the true values from the binary of 'Wealth' variable. Accuracy, the proportion of correctly predicted cases, is (16+13)/49 = 0.5918. Sensitivity, the proportion of wealthy nations that were correctly predicted, is 13/24 = 0.5417. Specificity, the proportion of poor nations that were correctly predicted, is 16/25 = 0.64. Precision/Recall, the proportion of wealthy nations as classified by the logistic regression that are really wealthy nations, is 13/22 = 0.5909. The accuracy, sensitivity, specificity, and precision of the logistic regression aren't great, but they aren't terrible - they are average (all around 0.5). 
+
+```{R}
+
+NewDataset_edited$logit <- predict(fit)
+NewDataset_edited$Wealth <- factor(NewDataset_edited$Wealth, levels = c("wealthy", "poor"))
+plot <- ggplot(data = NewDataset_edited, aes(logit, fill = Wealth)) +
+  geom_density()
+plot + ggtitle("Density Plot")
+
+```
+
+Using ggplot, I plotted density of log-odds calculated from the logistic regression by the binary wealth variable.
+    
+```{R}
+class_diag<-function(probs,truth){
+  
+  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+
+  if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+  
+  #CALCULATE EXACT AUC
+  ord<-order(probs, decreasing=TRUE)
+  probs <- probs[ord]; truth <- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+  TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  
+  n <- length(TPR)
+  auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,auc)
+}
+
+prob <- predict(fit, type = "response")
+
+library(plotROC)
+ROCplot <- ggplot(NewDataset) + 
+  geom_roc(aes(d = binary_wealth,m = prob), n.cuts = 0)
+ROCplot + ggtitle("ROC Curve")
+
+class_diag(prob, NewDataset$binary_wealth)
+```
+
+The ROC curve generated shows the trade-off between sensitivity and specificity of this logistics regression model. The AUC (area under the curve) is 0.72, which is "fair". This means that the logistic regression is doing an "all-right" job at predicting wealth from net migration and GINI coefficient.
+    
+```{R}
+set.seed(1234)
+k = 5 
+
+data1 <- NewDataset[sample(nrow(NewDataset)),] 
+folds <- cut(seq(1:nrow(NewDataset)), breaks = k, labels = F)
+
+diags <- NULL
+for(i in 1:k){
+ train <- data1[folds != i,]
+ test <- data1[folds == i,]
+ truth <- test$binary_wealth
+
+ fit <- glm(binary_wealth ~ GINI.Coefficient + NetMigration, data = train, family = "binomial")
+ probs <- predict(fit, newdata = test, type = "response")
+ 
+ diags <- rbind(diags, class_diag(probs, truth))
+}
+
+apply(diags, 2, mean)
+
+
+```
+
+From the 5-fold CV (5-fold instead of 10-fold because there's only 49 observations), the average (of 5) out-of-sample accuracy is 0.5889, sensitivity is 0.4583, and precision/recall is 0.475. All of these values are lower than those of the original logistics model. 
+
+
+### LASSO Regression
+```{R}
+Selected_Dataset <- NewDataset %>% select(GINI.Coefficient, Infant.mortality, GDP.per.capita, Literacy, Population, NetMigration, binary_wealth)
+
+library(glmnet)
+
+y <- as.matrix(Selected_Dataset$binary_wealth)
+fit <- glm(binary_wealth ~ ., data = Selected_Dataset, family = "binomial")
+x <- model.matrix(fit)
+x <- x[, -1]
+
+cv <- cv.glmnet(x, y, family = "binomial")
+
+lasso1 <- glmnet(x, y, lambda = cv$lambda.1se, family = "binomial")
+coef(lasso1)
+```
+
+For the lasso regression, I chose the binary wealth variable to predict and ran the regression against the rest of the variables as predictors. For the simplest model whose accuracy is near the best possible, GINI coefficient, infant mortality, GDP per capita, literacy, and population are predictor variables with nonzero LASSO coefficient estimates and are retained. The only predictor variable that isn't be retained is net migration. 
+
+```{R}
+Selected_Dataset <- NewDataset %>% select(GINI.Coefficient, Infant.mortality, GDP.per.capita, Literacy, Population, binary_wealth)
+
+set.seed(1234)
+k = 5 
+
+data1 <- Selected_Dataset[sample(nrow(Selected_Dataset)),] 
+folds <- cut(seq(1:nrow(Selected_Dataset)), breaks=k, labels=F)
+
+diags<-NULL
+for(i in 1:k){
+ train <- data1[folds != i,]
+ test <- data1[folds == i,]
+ truth <- test$binary_wealth
+
+ fit <- glm(binary_wealth ~ .,data = train, family = "binomial")
+ probs <- predict(fit, newdata = test, type = "response")
+ 
+ diags <- rbind(diags, class_diag(probs, truth))
+}
+
+apply(diags, 2, mean)
+
+```
+
+In performing 5-fold cross validation on only the predictor variables with nonzero LASSO coefficient estimates, the accuracy of the model is 0.9178, which is much higher than the accuracy of the logistic regresion (0.5918) and the accuracy of the 5-fold CV of that logistic regression (0.5889). The 5-fold cross validation on the selected predictor variables also has much higher sensitivity, specificity, precision, and AUC. Therefore, the lassoed model is much better at predicting wealth than the logistic regression with only 2 variables (net migration and GINI coefficient) and the 5-fold CV of the logistic regression with only 2 variables. 
+
+
+
+
+
+
+
+
+

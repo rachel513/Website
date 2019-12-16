@@ -1,0 +1,157 @@
+---
+title: "Project 1"
+author: "Rachel"
+date: 2019-10-21
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Introduction
+
+The first dataset I chose was from by SDS 328M project. At the time, I was really into global inequality after taking a government course, Politics of Poverty. In the dataset, I randomly chose 64 countries and from the CIA World FactBook (https://www.cia.gov/library/publications/the-world-factbook/docs/profileguide.html) and looked up their GINI coefficient (which measures the amount of inequality), infant mortality, and GDP per capital (in US dollars). The second dataset from data.world also looks at different countries around the world and the statistics that relate to well-being of people in the nation and how the nation is developing. Besides from the variable of country (which is the variable in common with the first dataset), this dataset also includes literacy rates, population, and net migration (out of 1,000 people). 
+
+I expect an association between literacy rate and GDP per capita. Usually, when the country is more wealthy, people are usually more educated, hence a higher literacy rate. However, this association probably isn't 100% infallible because there are exceptions. I also expect an association between infant mortality rate and GDP per capita because in richer nations, the health of the population is better and the health care system is more established. However, there will probably be exceptions because some poor nations (like Cuba) have very low infant mortality rates, while some very wehalth nations (like the US) have relatively high infant mortality rates. 
+
+## Tidying: Spread/Gather
+
+```{R}
+library(tidyverse)
+
+Dataset1 <- read.csv("C:/Users/rachel/Desktop/website/static/Part C Dataset.csv")
+Dataset2 <- read.csv("C:/Users/rachel/Desktop/website/static/Countries.csv")
+
+Dataset1 <- Dataset1 %>% na.omit()
+Dataset2 <- Dataset2 %>% na.omit()
+
+Dataset1 <- Dataset1 %>% pivot_wider(names_from = "Countries", values_from = "GDP.per.capita")
+Dataset1 <- Dataset1 %>% pivot_longer(4:63, names_to = "Countries", values_to = "GDP.per.capita")
+Dataset1 <- Dataset1 %>% na.omit()
+
+Dataset2 <- Dataset2 %>% pivot_wider(names_from = "Country", values_from = "Population")
+Dataset2 <- Dataset2 %>% pivot_longer(3:172, names_to = "Country", values_to = "Population")
+Dataset2 <- Dataset2 %>% na.omit()
+
+head(Dataset1)
+head(Dataset2)
+
+```
+
+The datasets were already tidy when I got them/made them. So, to make the first dataset untidy, I pivot_wider and made each country its own column with values from GDP per capita. Then to make it tidy again, I used pivot_longer and put the names of the columns back to the 'Countries' column with the values under each other the individual countries' columns back under GDP per capita. Because that process created a lot of empty values, I omitted all the rows with empty values to get back to the original dataset. 
+
+To make the second dataset untidy, I pivot_wider and made each country its own column with values from population. Then to make it tidy again, I used pivot_longer and put the names of the columns back to the 'Country' column with the values under each other the individual countries' columns back under 'Population'. Because that process created a lot of empty values, I omitted all the rows with empty values to get back to the original dataset. 
+
+## Joining/Merging
+
+```{R}
+
+Dataset1$Randomized.Rank <- NULL
+
+FullDataset <- inner_join(Dataset1, Dataset2, by = c("Countries" = "Country"))
+
+FullDataset <- FullDataset %>% na.omit()
+FullDataset <- FullDataset %>% distinct()
+
+head(FullDataset)
+
+```
+
+I chose to do inner_join because I only wanted the data is the countries were in both datasets. Because the first dataset was the one I created by randomly selected 64 countries, that dataset isn't going to contain all the countries in the world. After getting rid of the observations with empty variables in the untidying/untidying portion, the first dataset has 61 observations (lost 3 observations) and the second dataset still has 170 observations (lost 0 observations). After the inner_join, 11 observations were dropped from the first dataset and 120 observations were dropped from the second dataset. After getting rid of duplicate rows, the full dataset contains 49 countries in which all 6 numerical variables are 'filled in'. However, I am worried that the full dataset is too small, with only 49 countries. Both datasets started out with more than 50 observations each, but after joining, removing rows with empty values and duplicate rows, the final dataset has less than 50 observations.
+
+## Wrangling
+
+```{R}
+FullDataset <- FullDataset %>% mutate(Migration = NetMigration*Population/1000)
+FullDataset <- FullDataset %>% arrange(GDP.per.capita)
+FullDataset %>% filter(GDP.per.capita == median(GDP.per.capita))
+FullDataset <- FullDataset %>% mutate(Wealth = case_when(GDP.per.capita > 15200 ~ "wealthy", GDP.per.capita <= 15200 ~ "poor"))
+
+FullDataset %>% dplyr::select(GDP.per.capita, Literacy, Population, NetMigration, Infant.mortality, Wealth) %>% group_by(Wealth) %>% summarize(mean_GDPPC = mean(GDP.per.capita), mean_literacy = mean(Literacy), mean_Population = mean(Population), mean_NetMigration= mean(NetMigration), mean_InfantMortality = mean(Infant.mortality))
+
+FullDataset %>% summarize_all(sd)
+
+FullDataset %>% group_by(Wealth) %>% summarize_all(sd)
+
+
+
+
+```
+
+With the mutate function, I created a new variable  - Migration. Because net migration is out of 1,000 people, I multipled NetMigration by Population, and then divided by 1,000. I first arranged the countries by GDP per capita in order to rank the countries from poorest to wealthiest. I then found the middle value of GDP per capita (15200) in order to find the point at which to divide countries into poor countries and wealthy countries (to create a dichotomous categorical value from a numerical value). Separating based on wealth, poorer countries have an average 5,916 dollars in GDP per capita, 69.14% literacy rate, 36,579,732 population size, net migration of -1.512 people per 1,000 people, and 34.55 infant deaths per 1,000 live births, while wealthier countries have an average of 34,020.083 dollars in GDP per capita, 96.39% literacy rate, 96,332,666 population size, net migration of 0.742 people per 1,000 people, and 10.18 infant deaths per 1,000 live births. The statistics make sense because poorer countries typically have a smaller GDP per capita, lower literacy rate, net migration loss, and higher infant mortality rate. 
+
+When comparing the standard deviation of the variables as a whole to the standard deviation of the variables when separated into poorer countries and wealthier countries, we can see that while there's a large variation in infant mortality for all countries together (18.16), there's less variation in wealthier nations (8.72) than in poorer nations (16.86). When bringing in knowledge from other courses, this can be interpreted as having other variables that are equally or more important than wealth. While wealth clearly helps lower the infant mortality rate (as shown by the lower average infant mortality rate among wealthier nations), the fact that there's still such a large variation in infant mortality rate among the poorer nations means that there are still poor countries that have a relatively low infant mortality rate. It could be universal healthcare, cultural values, etc. When looking at literacy, we can see that while there's a large variation for all countries (0.212), most or even all of that variation is contributed by poorer countries (0.224). There's very little variation in literacy rate among wealthy countries (0.048), which could indicate the importance of literacy and thus education in developing the economy of a country. There's also more variation in GDP per capita of wealthier nations (16,571) than in that of poorer nations (4207). At this point, I'm not quite sure if that is significant or not (it could just be a consequence of the countries in the dataset). It could also be that because I classified countries as poor or wealthy based on their GDP per capita compared to the median value, there are more poor countries than wealthy countries.
+
+## Visualizing
+
+```{R}
+
+
+library(ggplot2)
+plot1 <- ggplot(data = FullDataset, aes(x = GDP.per.capita, y = Infant.mortality, color = Literacy)) + 
+  geom_point(size = 1) + 
+  geom_line() + 
+  scale_fill_brewer()
+plot1 + ggtitle("GDP per Capita vs. Infant Mortality Rate") + ylab("Infant Mortality (out of 1,000)") + scale_x_continuous(name = "GDP per Capita ($)", breaks = c(0, 10000, 20000, 30000, 40000, 50000, 60000, 70000))
+
+plot2 <- ggplot(data = FullDataset, aes(x = Wealth, y = NetMigration, color = Population)) + 
+  geom_errorbar(stat="summary", fun.data = "mean_se") + 
+  geom_point(size = 2) +
+  theme(legend.position="none") +
+  scale_fill_ordinal()
+plot2 + xlab("Wealth") + ggtitle("Wealth vs. Net Migration") + ylab("Net Migration (out of 1,000 people)")
+
+
+
+  
+```
+
+The first plot shows all the countries, with GDP per capita on the x-axis and infant mortality on the y-axis, with net migration shown through different shades of blue. This shows an apparent trend in which larger GDP per capita corresponds with lower infant mortality. However, as shown by several spikes and dips in the plot, not every country follows this trend. As I have mentioned before, this could be explained by the fact that wealth isn't everything when it comes to infant mortality rate (which is a significant indicator of a country's health). There can also be other factors involved besides money that help lower infant mortality rate. When looking at literacy, we can see that countries with higher GDP per capita tend to higher literacy rates.
+
+The second plot shows the countries are separated by wealth on the x-axis and mean net migration is plotted on the y-axis, with population shown through different colors. This shows an apparent trend in which larger GDP per capita corresponds with net migration into those countries, while a lower GDP per capita corresponds with net migration out of those countries. This trend might be explained by push and pull factors. Countries with lower GDP per capita have less economic opportunities and the residents are more likely to leave in search of better opportunities. On the other hand, countries with higher GDP per capita attract people to migrate in because of more economic opportunities. However, I can see that this trend isn't true for all countries. I also don't see any trends with population size and the other 2 variables.
+
+## Dimensionality Reduction
+
+```{R}
+
+FullDataset_num <- FullDataset %>% select_if(is.numeric) %>% scale
+FullDataset_pca <- princomp(FullDataset_num)
+summary(FullDataset_pca, loadings=T)
+
+eigval<-FullDataset_pca$sdev^2
+varprop=round(eigval/sum(eigval),2)
+
+ggplot()+geom_bar(aes(y=varprop,x=1:7),stat="identity")+xlab("")+geom_path(aes(y=varprop,x=1:7))+
+  geom_text(aes(x=1:7,y=varprop,label=round(varprop,2)),vjust=1,col="white",size=5)+
+ scale_y_continuous(breaks=seq(0,.6,.2),labels = scales::percent)+
+ scale_x_continuous(breaks=1:10)
+
+round(cumsum(eigval)/sum(eigval),2)
+
+eigval
+
+Countries <- FullDataset$Countries
+NewDataset <- FullDataset_pca$scores %>% as.data.frame %>% cbind(Countries,.)
+head(NewDataset)
+
+FullDataset_pca$loadings[1:7,1:2]%>%as.data.frame%>%rownames_to_column%>%
+ggplot()+geom_hline(aes(yintercept=0),lty=2)+
+ geom_vline(aes(xintercept=0),lty=2)+ylab("PC2")+xlab("PC1")+
+ geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col="red")+
+ geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))
+
+```
+
+From the ggplot, cumulative proportion of variance, and eigenvalues, I chose to keep the first 3 PCs (because the cumulative of variance is 0.82 and the eigenvalues are greater than 1). I then created a new dataset (NewDataset) with the PC scores for each observation/country. From interpreting the PC scores, we can see that GDP per capita and literacy correspond the most with PC1, which shows a country's general strength. That makes sense because a developed economy (which corresponds to GDP per capita) indicates a developed country. Higher literacy rates also indicate a country with a highly skilled labor force, which attracts higher-level industries. Interpreting PC2 shows that higher scores on PC2 mean more migration and net migration, but less literacy and lower scores mean more literacy, but less migration and net migration.
+
+
+
+
+
+
+
+

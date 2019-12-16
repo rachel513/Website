@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Rachel Dean" />
+    <meta name="description" content="Hi everyone! Welcome to my SDS 348 Computational Biology Final Project. Feel free to look around.">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Project 1</title>
+    <meta name="generator" content="Hugo 0.61.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/about/">ABOUT ME</a></li>
+        
+        <li><a href="/blog/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+        <li><a href="/myresume.pdf">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/project1/">Project 1</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          October 21, 2019
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The first dataset I chose was from by SDS 328M project. At the time, I was really into global inequality after taking a government course, Politics of Poverty. In the dataset, I randomly chose 64 countries and from the CIA World FactBook (<a href="https://www.cia.gov/library/publications/the-world-factbook/docs/profileguide.html" class="uri">https://www.cia.gov/library/publications/the-world-factbook/docs/profileguide.html</a>) and looked up their GINI coefficient (which measures the amount of inequality), infant mortality, and GDP per capital (in US dollars). The second dataset from data.world also looks at different countries around the world and the statistics that relate to well-being of people in the nation and how the nation is developing. Besides from the variable of country (which is the variable in common with the first dataset), this dataset also includes literacy rates, population, and net migration (out of 1,000 people).</p>
+<p>I expect an association between literacy rate and GDP per capita. Usually, when the country is more wealthy, people are usually more educated, hence a higher literacy rate. However, this association probably isn’t 100% infallible because there are exceptions. I also expect an association between infant mortality rate and GDP per capita because in richer nations, the health of the population is better and the health care system is more established. However, there will probably be exceptions because some poor nations (like Cuba) have very low infant mortality rates, while some very wehalth nations (like the US) have relatively high infant mortality rates.</p>
+</div>
+<div id="tidying-spreadgather" class="section level2">
+<h2>Tidying: Spread/Gather</h2>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## &lt;U+2713&gt; ggplot2 3.2.1     &lt;U+2713&gt; purrr   0.3.3
+## &lt;U+2713&gt; tibble  2.1.3     &lt;U+2713&gt; dplyr   0.8.3
+## &lt;U+2713&gt; tidyr   1.0.0     &lt;U+2713&gt; stringr 1.4.0
+## &lt;U+2713&gt; readr   1.3.1     &lt;U+2713&gt; forcats 0.4.0</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------------------------------------------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>Dataset1 &lt;- read.csv(&quot;C:/Users/rachel/Desktop/website/static/Part C Dataset.csv&quot;)
+Dataset2 &lt;- read.csv(&quot;C:/Users/rachel/Desktop/website/static/Countries.csv&quot;)
+
+Dataset1 &lt;- Dataset1 %&gt;% na.omit()
+Dataset2 &lt;- Dataset2 %&gt;% na.omit()
+
+Dataset1 &lt;- Dataset1 %&gt;% pivot_wider(names_from = &quot;Countries&quot;, values_from = &quot;GDP.per.capita&quot;)
+Dataset1 &lt;- Dataset1 %&gt;% pivot_longer(4:63, names_to = &quot;Countries&quot;, values_to = &quot;GDP.per.capita&quot;)
+Dataset1 &lt;- Dataset1 %&gt;% na.omit()
+
+Dataset2 &lt;- Dataset2 %&gt;% pivot_wider(names_from = &quot;Country&quot;, values_from = &quot;Population&quot;)
+Dataset2 &lt;- Dataset2 %&gt;% pivot_longer(3:172, names_to = &quot;Country&quot;, values_to = &quot;Population&quot;)
+Dataset2 &lt;- Dataset2 %&gt;% na.omit()
+
+head(Dataset1)</code></pre>
+<pre><code>## # A tibble: 6 x 5
+##   Randomized.Rank GINI.Coefficient Infant.mortality Countries   GDP.per.capita
+##             &lt;int&gt;            &lt;dbl&gt;            &lt;dbl&gt; &lt;chr&gt;                &lt;int&gt;
+## 1              34             45.9             15.9 Ecuador              11500
+## 2              19             49               16.9 Brazil               15600
+## 3              40             44.6             49.8 Cameroon              3700
+## 4              89             36               16.3 El Salvador           8000
+## 5              10             53               23.3 Guatemala             8200
+## 6              38             45.3             17.8 Peru                 13500</code></pre>
+<pre class="r"><code>head(Dataset2)</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##   Literacy NetMigration Country   Population
+##      &lt;dbl&gt;        &lt;dbl&gt; &lt;chr&gt;          &lt;int&gt;
+## 1    0.987         -3.3 Albania      3038594
+## 2    0.8           -0.9 Algeria     39670000
+## 3    1              0   Andorra        86165
+## 4    0.711         -0.1 Angola      25020000
+## 5    0.95          11.9 Anguilla       15000
+## 6    0.981         -0.1 Argentina   43420000</code></pre>
+<p>The datasets were already tidy when I got them/made them. So, to make the first dataset untidy, I pivot_wider and made each country its own column with values from GDP per capita. Then to make it tidy again, I used pivot_longer and put the names of the columns back to the ‘Countries’ column with the values under each other the individual countries’ columns back under GDP per capita. Because that process created a lot of empty values, I omitted all the rows with empty values to get back to the original dataset.</p>
+<p>To make the second dataset untidy, I pivot_wider and made each country its own column with values from population. Then to make it tidy again, I used pivot_longer and put the names of the columns back to the ‘Country’ column with the values under each other the individual countries’ columns back under ‘Population’. Because that process created a lot of empty values, I omitted all the rows with empty values to get back to the original dataset.</p>
+</div>
+<div id="joiningmerging" class="section level2">
+<h2>Joining/Merging</h2>
+<pre class="r"><code>Dataset1$Randomized.Rank &lt;- NULL
+
+FullDataset &lt;- inner_join(Dataset1, Dataset2, by = c(&quot;Countries&quot; = &quot;Country&quot;))
+
+FullDataset &lt;- FullDataset %&gt;% na.omit()
+FullDataset &lt;- FullDataset %&gt;% distinct()
+
+head(FullDataset)</code></pre>
+<pre><code>## # A tibble: 6 x 7
+##   GINI.Coefficient Infant.mortality Countries GDP.per.capita Literacy
+##              &lt;dbl&gt;            &lt;dbl&gt; &lt;chr&gt;              &lt;int&gt;    &lt;dbl&gt;
+## 1             45.9             15.9 Ecuador            11500    0.945
+## 2             49               16.9 Brazil             15600    0.922
+## 3             44.6             49.8 Cameroon            3700    0.75 
+## 4             36               16.3 El Salva…           8000    0.904
+## 5             53               23.3 Guatemala           8200    0.815
+## 6             45.3             17.8 Peru               13500    0.945
+## # … with 2 more variables: NetMigration &lt;dbl&gt;, Population &lt;int&gt;</code></pre>
+<p>I chose to do inner_join because I only wanted the data is the countries were in both datasets. Because the first dataset was the one I created by randomly selected 64 countries, that dataset isn’t going to contain all the countries in the world. After getting rid of the observations with empty variables in the untidying/untidying portion, the first dataset has 61 observations (lost 3 observations) and the second dataset still has 170 observations (lost 0 observations). After the inner_join, 11 observations were dropped from the first dataset and 120 observations were dropped from the second dataset. After getting rid of duplicate rows, the full dataset contains 49 countries in which all 6 numerical variables are ‘filled in’. However, I am worried that the full dataset is too small, with only 49 countries. Both datasets started out with more than 50 observations each, but after joining, removing rows with empty values and duplicate rows, the final dataset has less than 50 observations.</p>
+</div>
+<div id="wrangling" class="section level2">
+<h2>Wrangling</h2>
+<pre class="r"><code>FullDataset &lt;- FullDataset %&gt;% mutate(Migration = NetMigration*Population/1000)
+FullDataset &lt;- FullDataset %&gt;% arrange(GDP.per.capita)
+FullDataset %&gt;% filter(GDP.per.capita == median(GDP.per.capita))</code></pre>
+<pre><code>## # A tibble: 1 x 8
+##   GINI.Coefficient Infant.mortality Countries GDP.per.capita Literacy
+##              &lt;dbl&gt;            &lt;dbl&gt; &lt;chr&gt;              &lt;int&gt;    &lt;dbl&gt;
+## 1             35.3             18.9 Algeria            15200      0.8
+## # … with 3 more variables: NetMigration &lt;dbl&gt;, Population &lt;int&gt;,
+## #   Migration &lt;dbl&gt;</code></pre>
+<pre class="r"><code>FullDataset &lt;- FullDataset %&gt;% mutate(Wealth = case_when(GDP.per.capita &gt; 15200 ~ &quot;wealthy&quot;, GDP.per.capita &lt;= 15200 ~ &quot;poor&quot;))
+
+FullDataset %&gt;% dplyr::select(GDP.per.capita, Literacy, Population, NetMigration, Infant.mortality, Wealth) %&gt;% group_by(Wealth) %&gt;% summarize(mean_GDPPC = mean(GDP.per.capita), mean_literacy = mean(Literacy), mean_Population = mean(Population), mean_NetMigration= mean(NetMigration), mean_InfantMortality = mean(Infant.mortality))</code></pre>
+<pre><code>## # A tibble: 2 x 6
+##   Wealth mean_GDPPC mean_literacy mean_Population mean_NetMigrati…
+##   &lt;chr&gt;       &lt;dbl&gt;         &lt;dbl&gt;           &lt;dbl&gt;            &lt;dbl&gt;
+## 1 poor        5916          0.691       36579732.           -1.51 
+## 2 wealt…     34021.         0.964       96332666.            0.742
+## # … with 1 more variable: mean_InfantMortality &lt;dbl&gt;</code></pre>
+<pre class="r"><code>FullDataset %&gt;% summarize_all(sd)</code></pre>
+<pre><code>## Warning in var(if (is.vector(x) || is.factor(x)) x else as.double(x), na.rm =
+## na.rm): NAs introduced by coercion
+
+## Warning in var(if (is.vector(x) || is.factor(x)) x else as.double(x), na.rm =
+## na.rm): NAs introduced by coercion</code></pre>
+<pre><code>## # A tibble: 1 x 9
+##   GINI.Coefficient Infant.mortality Countries GDP.per.capita Literacy
+##              &lt;dbl&gt;            &lt;dbl&gt;     &lt;dbl&gt;          &lt;dbl&gt;    &lt;dbl&gt;
+## 1             8.84             18.2        NA         18492.    0.212
+## # … with 4 more variables: NetMigration &lt;dbl&gt;, Population &lt;dbl&gt;,
+## #   Migration &lt;dbl&gt;, Wealth &lt;dbl&gt;</code></pre>
+<pre class="r"><code>FullDataset %&gt;% group_by(Wealth) %&gt;% summarize_all(sd)</code></pre>
+<pre><code>## Warning in var(if (is.vector(x) || is.factor(x)) x else as.double(x), na.rm =
+## na.rm): NAs introduced by coercion
+
+## Warning in var(if (is.vector(x) || is.factor(x)) x else as.double(x), na.rm =
+## na.rm): NAs introduced by coercion</code></pre>
+<pre><code>## # A tibble: 2 x 9
+##   Wealth GINI.Coefficient Infant.mortality Countries GDP.per.capita Literacy
+##   &lt;chr&gt;             &lt;dbl&gt;            &lt;dbl&gt;     &lt;dbl&gt;          &lt;dbl&gt;    &lt;dbl&gt;
+## 1 poor               8.23            16.9         NA          4208.   0.224 
+## 2 wealt…             8.67             8.72        NA         16572.   0.0480
+## # … with 3 more variables: NetMigration &lt;dbl&gt;, Population &lt;dbl&gt;,
+## #   Migration &lt;dbl&gt;</code></pre>
+<p>With the mutate function, I created a new variable - Migration. Because net migration is out of 1,000 people, I multipled NetMigration by Population, and then divided by 1,000. I first arranged the countries by GDP per capita in order to rank the countries from poorest to wealthiest. I then found the middle value of GDP per capita (15200) in order to find the point at which to divide countries into poor countries and wealthy countries (to create a dichotomous categorical value from a numerical value). Separating based on wealth, poorer countries have an average 5,916 dollars in GDP per capita, 69.14% literacy rate, 36,579,732 population size, net migration of -1.512 people per 1,000 people, and 34.55 infant deaths per 1,000 live births, while wealthier countries have an average of 34,020.083 dollars in GDP per capita, 96.39% literacy rate, 96,332,666 population size, net migration of 0.742 people per 1,000 people, and 10.18 infant deaths per 1,000 live births. The statistics make sense because poorer countries typically have a smaller GDP per capita, lower literacy rate, net migration loss, and higher infant mortality rate.</p>
+<p>When comparing the standard deviation of the variables as a whole to the standard deviation of the variables when separated into poorer countries and wealthier countries, we can see that while there’s a large variation in infant mortality for all countries together (18.16), there’s less variation in wealthier nations (8.72) than in poorer nations (16.86). When bringing in knowledge from other courses, this can be interpreted as having other variables that are equally or more important than wealth. While wealth clearly helps lower the infant mortality rate (as shown by the lower average infant mortality rate among wealthier nations), the fact that there’s still such a large variation in infant mortality rate among the poorer nations means that there are still poor countries that have a relatively low infant mortality rate. It could be universal healthcare, cultural values, etc. When looking at literacy, we can see that while there’s a large variation for all countries (0.212), most or even all of that variation is contributed by poorer countries (0.224). There’s very little variation in literacy rate among wealthy countries (0.048), which could indicate the importance of literacy and thus education in developing the economy of a country. There’s also more variation in GDP per capita of wealthier nations (16,571) than in that of poorer nations (4207). At this point, I’m not quite sure if that is significant or not (it could just be a consequence of the countries in the dataset). It could also be that because I classified countries as poor or wealthy based on their GDP per capita compared to the median value, there are more poor countries than wealthy countries.</p>
+</div>
+<div id="visualizing" class="section level2">
+<h2>Visualizing</h2>
+<pre class="r"><code>library(ggplot2)
+plot1 &lt;- ggplot(data = FullDataset, aes(x = GDP.per.capita, y = Infant.mortality, color = Literacy)) + 
+  geom_point(size = 1) + 
+  geom_line() + 
+  scale_fill_brewer()
+plot1 + ggtitle(&quot;GDP per Capita vs. Infant Mortality Rate&quot;) + ylab(&quot;Infant Mortality (out of 1,000)&quot;) + scale_x_continuous(name = &quot;GDP per Capita ($)&quot;, breaks = c(0, 10000, 20000, 30000, 40000, 50000, 60000, 70000))</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>plot2 &lt;- ggplot(data = FullDataset, aes(x = Wealth, y = NetMigration, color = Population)) + 
+  geom_errorbar(stat=&quot;summary&quot;, fun.data = &quot;mean_se&quot;) + 
+  geom_point(size = 2) +
+  theme(legend.position=&quot;none&quot;) +
+  scale_fill_ordinal()
+plot2 + xlab(&quot;Wealth&quot;) + ggtitle(&quot;Wealth vs. Net Migration&quot;) + ylab(&quot;Net Migration (out of 1,000 people)&quot;)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<p>The first plot shows all the countries, with GDP per capita on the x-axis and infant mortality on the y-axis, with net migration shown through different shades of blue. This shows an apparent trend in which larger GDP per capita corresponds with lower infant mortality. However, as shown by several spikes and dips in the plot, not every country follows this trend. As I have mentioned before, this could be explained by the fact that wealth isn’t everything when it comes to infant mortality rate (which is a significant indicator of a country’s health). There can also be other factors involved besides money that help lower infant mortality rate. When looking at literacy, we can see that countries with higher GDP per capita tend to higher literacy rates.</p>
+<p>The second plot shows the countries are separated by wealth on the x-axis and mean net migration is plotted on the y-axis, with population shown through different colors. This shows an apparent trend in which larger GDP per capita corresponds with net migration into those countries, while a lower GDP per capita corresponds with net migration out of those countries. This trend might be explained by push and pull factors. Countries with lower GDP per capita have less economic opportunities and the residents are more likely to leave in search of better opportunities. On the other hand, countries with higher GDP per capita attract people to migrate in because of more economic opportunities. However, I can see that this trend isn’t true for all countries. I also don’t see any trends with population size and the other 2 variables.</p>
+</div>
+<div id="dimensionality-reduction" class="section level2">
+<h2>Dimensionality Reduction</h2>
+<pre class="r"><code>FullDataset_num &lt;- FullDataset %&gt;% select_if(is.numeric) %&gt;% scale
+FullDataset_pca &lt;- princomp(FullDataset_num)
+summary(FullDataset_pca, loadings=T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2    Comp.3    Comp.4     Comp.5
+## Standard deviation     1.6844874 1.1538729 1.0324763 0.8597935 0.68886429
+## Proportion of Variance 0.4138018 0.1941658 0.1554594 0.1078065 0.06920288
+## Cumulative Proportion  0.4138018 0.6079676 0.7634270 0.8712335 0.94043641
+##                            Comp.6     Comp.7
+## Standard deviation     0.51828866 0.37391564
+## Proportion of Variance 0.03917421 0.02038938
+## Cumulative Proportion  0.97961062 1.00000000
+## 
+## Loadings:
+##                  Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6 Comp.7
+## GINI.Coefficient  0.333  0.246  0.432  0.636  0.373  0.235  0.207
+## Infant.mortality  0.507  0.231        -0.216        -0.631  0.486
+## GDP.per.capita   -0.547  0.106        -0.109         0.245  0.782
+## Literacy         -0.429 -0.355         0.417  0.329 -0.637       
+## NetMigration     -0.276  0.483  0.415 -0.447  0.466 -0.172 -0.266
+## Population              -0.389  0.797        -0.442 -0.103       
+## Migration        -0.270  0.603         0.395 -0.574 -0.201 -0.192</code></pre>
+<pre class="r"><code>eigval&lt;-FullDataset_pca$sdev^2
+varprop=round(eigval/sum(eigval),2)
+
+ggplot()+geom_bar(aes(y=varprop,x=1:7),stat=&quot;identity&quot;)+xlab(&quot;&quot;)+geom_path(aes(y=varprop,x=1:7))+
+  geom_text(aes(x=1:7,y=varprop,label=round(varprop,2)),vjust=1,col=&quot;white&quot;,size=5)+
+ scale_y_continuous(breaks=seq(0,.6,.2),labels = scales::percent)+
+ scale_x_continuous(breaks=1:10)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>round(cumsum(eigval)/sum(eigval),2)</code></pre>
+<pre><code>## Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6 Comp.7 
+##   0.41   0.61   0.76   0.87   0.94   0.98   1.00</code></pre>
+<pre class="r"><code>eigval</code></pre>
+<pre><code>##    Comp.1    Comp.2    Comp.3    Comp.4    Comp.5    Comp.6    Comp.7 
+## 2.8374979 1.3314228 1.0660073 0.7392448 0.4745340 0.2686231 0.1398129</code></pre>
+<pre class="r"><code>Countries &lt;- FullDataset$Countries
+NewDataset &lt;- FullDataset_pca$scores %&gt;% as.data.frame %&gt;% cbind(Countries,.)
+head(NewDataset)</code></pre>
+<pre><code>##      Countries   Comp.1    Comp.2     Comp.3     Comp.4      Comp.5
+## 1       Malawi 1.647362 0.7248962  0.1093582 -0.0341497  0.14607079
+## 2   Madagascar 1.409756 0.5648122 -0.1070674 -0.4041197 -0.09332712
+## 3      Comoros 2.391033 0.7115312  0.2179355  1.0121307  0.40938414
+## 4        Haiti 2.250898 1.5083187  0.9705567  0.7361844  0.82587971
+## 5 Burkina Faso 2.297269 1.1740948 -0.1740070 -1.2156324 -0.63153358
+## 6         Chad 3.145140 0.9256253 -0.3773490 -0.7918646 -0.78937724
+##          Comp.6      Comp.7
+## 1 -0.2393352989 -0.15248572
+## 2 -0.2708194353 -0.31107685
+## 3 -0.7826124046  0.72335585
+## 4  0.1196752902  0.18085083
+## 5 -0.0007851756  0.01744613
+## 6 -0.3686718479  0.85102252</code></pre>
+<pre class="r"><code>FullDataset_pca$loadings[1:7,1:2]%&gt;%as.data.frame%&gt;%rownames_to_column%&gt;%
+ggplot()+geom_hline(aes(yintercept=0),lty=2)+
+ geom_vline(aes(xintercept=0),lty=2)+ylab(&quot;PC2&quot;)+xlab(&quot;PC1&quot;)+
+ geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col=&quot;red&quot;)+
+ geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<p>From the ggplot, cumulative proportion of variance, and eigenvalues, I chose to keep the first 3 PCs (because the cumulative of variance is 0.82 and the eigenvalues are greater than 1). I then created a new dataset (NewDataset) with the PC scores for each observation/country. From interpreting the PC scores, we can see that GDP per capita and literacy correspond the most with PC1, which shows a country’s general strength. That makes sense because a developed economy (which corresponds to GDP per capita) indicates a developed country. Higher literacy rates also indicate a country with a highly skilled labor force, which attracts higher-level industries. Interpreting PC2 shows that higher scores on PC2 mean more migration and net migration, but less literacy and lower scores mean more literacy, but less migration and net migration.</p>
+</div>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

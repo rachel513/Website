@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Rachel Dean</title>
+    <link>/</link>
+    <description>Recent content on Rachel Dean</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Thu, 12 Dec 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Working with Python</title>
+      <link>/blog/working-with-python/</link>
+      <pubDate>Thu, 12 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/working-with-python/</guid>
+      <description>In the month that we as a class were working on Python, I found that the topic that I enjoyed the most is isolating specific phrases using regex (regular expression). Figuring it out how to isolate certain sections is like a puzzle, which is what I like most about Genetics and Genomics work (my focus in academics). It’s kind of like figuring out a pedigree - what’s an individual’s likely genotype given their phenotype and their relatives’ phenotypes, what’s the mode of inheritance, etc.</description>
+    </item>
+    
+    <item>
+      <title>Project 2</title>
+      <link>/project2/</link>
+      <pubDate>Wed, 27 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/project2/</guid>
+      <description>Introductionlibrary(tidyverse)## -- Attaching packages -------------------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --## &amp;lt;U+2713&amp;gt; ggplot2 3.2.1 &amp;lt;U+2713&amp;gt; purrr 0.3.3## &amp;lt;U+2713&amp;gt; tibble 2.1.3 &amp;lt;U+2713&amp;gt; dplyr 0.8.3## &amp;lt;U+2713&amp;gt; tidyr 1.0.0 &amp;lt;U+2713&amp;gt; stringr 1.4.0## &amp;lt;U+2713&amp;gt; readr 1.3.1 &amp;lt;U+2713&amp;gt; forcats 0.4.0## -- Conflicts ----------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --## x dplyr::filter() masks stats::filter()## x dplyr::lag() masks stats::lag()Dataset1 &amp;lt;- read.csv(&amp;quot;C:/Users/rachel/Desktop/website/static/Part C Dataset.csv&amp;quot;)Dataset2 &amp;lt;- read.csv(&amp;quot;C:/Users/rachel/Desktop/website/static/Countries.csv&amp;quot;)Dataset1 &amp;lt;- Dataset1 %&amp;gt;% na.omit() Dataset2 &amp;lt;- Dataset2 %&amp;gt;% na.</description>
+    </item>
+    
+    <item>
+      <title>Project 1</title>
+      <link>/project1/</link>
+      <pubDate>Mon, 21 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/project1/</guid>
+      <description>IntroductionThe first dataset I chose was from by SDS 328M project. At the time, I was really into global inequality after taking a government course, Politics of Poverty. In the dataset, I randomly chose 64 countries and from the CIA World FactBook (https://www.cia.gov/library/publications/the-world-factbook/docs/profileguide.html) and looked up their GINI coefficient (which measures the amount of inequality), infant mortality, and GDP per capital (in US dollars). The second dataset from data.</description>
+    </item>
+    
+    <item>
+      <title>Projects</title>
+      <link>/about/</link>
+      <pubDate>Sun, 02 Oct 2016 22:55:05 -0400</pubDate>
+      
+      <guid>/about/</guid>
+      <description>INTRODUCTION Hi! My name is Rachel Dean and I&#39;m currently a junior at the University of Texas at Austin. I was born in Orange County, CA and moved to Austin, TX when I was really young. I have a brother, Joseph, who also goes to UT Austin. He followed in our father&#39;s footsteps and is an Electrical Engineering (EE) major and plans to get his Ph.D in the topic. My family&#39;s from Taiwan and a couple of summers ago, after a mountain of paperwok, I became a dual citizen of USA and Taiwan.</description>
+    </item>
+    
+    <item>
+      <title>Projects</title>
+      <link>/projects/</link>
+      <pubDate>Sun, 02 Oct 2016 22:55:05 -0400</pubDate>
+      
+      <guid>/projects/</guid>
+      <description>Projects Here are some projects working off data from countries all around the world:
+  Project 1
+  Project 2
+  </description>
+    </item>
+    
+  </channel>
+</rss>
